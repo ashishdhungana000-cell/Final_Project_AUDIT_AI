@@ -544,7 +544,7 @@ function displayResults() {
   if (chatToggle) chatToggle.classList.remove('hidden');
 
   // Show Clear Data button
-  if (clearDataBtn) clearDataBtn.classList.remove('hidden');
+  if (clearDataBtn) clearDataBtn.style.display = 'flex';
 
   // Save audit results to localStorage history log
   saveAuditToHistory(currentFilename, auditData, auditStats, flaggedItems);
@@ -1006,7 +1006,7 @@ function loadAuditFromHistory(id) {
     renderTopSuspiciousTable();
     renderActionPlan();
 
-    if (clearDataBtn) clearDataBtn.classList.remove('hidden');
+    if (clearDataBtn) clearDataBtn.style.display = 'flex';
 
     // Trigger report rendering
     renderReport();
@@ -1658,7 +1658,7 @@ function performClear() {
   }
 
   // Hide the Clear Data button
-  if (clearDataBtn) clearDataBtn.classList.add('hidden');
+  if (clearDataBtn) clearDataBtn.style.display = 'none';
 
   // Hide floating chat interface but keep toggle visible
   if (chatInterface) chatInterface.classList.remove('open');
