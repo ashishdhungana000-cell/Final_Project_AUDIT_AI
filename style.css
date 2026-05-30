@@ -225,13 +225,12 @@ nav {
   margin-bottom: 2rem;
 }
 
-/* Table Area */
 .table-container {
   background: var(--bg-card);
   backdrop-filter: var(--glass);
   border: 1px solid var(--border);
   border-radius: 16px;
-  overflow: hidden;
+  overflow-x: auto !important;
 }
 
 table {
@@ -1330,6 +1329,33 @@ body.light-theme .card:hover {
   border-color: rgba(15, 23, 42, 0.15);
 }
 
+.dashboard-top-row {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+  align-items: start;
+}
+
+.hero-demo-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  z-index: 1;
+}
+
+@media (max-width: 1024px) {
+  .dashboard-top-row {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-demo-cards {
+    grid-template-columns: 1fr !important;
+  }
+}
+
 /* ==========================================
    TABLET & MOBILE RESPONSIVENESS
    ========================================== */
@@ -1346,27 +1372,34 @@ body.light-theme .card:hover {
   }
   
   aside {
-    width: 100%;
-    border-right: none;
-    border-bottom: 1px solid var(--border);
-    padding: 1.25rem 1.5rem;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
+    width: 100% !important;
+    border-right: none !important;
+    border-bottom: 1px solid var(--border) !important;
+    padding: 0.75rem 1.5rem !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 0.5rem !important;
   }
   
   .logo {
-    margin-bottom: 0;
+    padding: 0px !important;
+    margin-bottom: 0px !important;
+    height: auto !important;
+    min-height: unset !important;
   }
   
   nav {
-    flex-direction: row;
-    gap: 0.5rem;
-    margin-top: 0;
+    flex-direction: row !important;
+    gap: 0.5rem !important;
+    margin-top: 0px !important;
+    padding-top: 0px !important;
+    width: auto !important;
   }
   
-  aside div[style*="margin-top: auto;"] {
-    margin-top: 0 !important;
+  aside div[style*="margin-top: auto"] {
+    margin-top: 0px !important;
+    width: auto !important;
   }
   
   .nav-item {
