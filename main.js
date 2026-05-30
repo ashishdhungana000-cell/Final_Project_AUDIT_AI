@@ -533,8 +533,12 @@ function displayResults() {
   dashboardSection.classList.remove('hidden');
   
   // Update Badge
-  flaggedCountBadge.textContent = auditStats.flagged;
-  flaggedCountBadge.classList.remove('hidden');
+  if (auditStats.flagged > 0) {
+    flaggedCountBadge.textContent = auditStats.flagged;
+    flaggedCountBadge.style.display = 'inline-block';
+  } else {
+    flaggedCountBadge.style.display = 'none';
+  }
 
   updateDashboard(auditStats, auditData);
   renderTopSuspiciousTable();
@@ -999,8 +1003,12 @@ function loadAuditFromHistory(id) {
     currentFilename = item.filename;
 
     // Load results into memory
-    flaggedCountBadge.textContent = auditStats.flagged;
-    flaggedCountBadge.classList.remove('hidden');
+    if (auditStats.flagged > 0) {
+      flaggedCountBadge.textContent = auditStats.flagged;
+      flaggedCountBadge.style.display = 'inline-block';
+    } else {
+      flaggedCountBadge.style.display = 'none';
+    }
 
     updateDashboard(auditStats, auditData);
     renderTopSuspiciousTable();
@@ -1639,7 +1647,7 @@ function performClear() {
   if (fileInput) fileInput.value = '';
 
   // Hide flagged badge and reset count
-  flaggedCountBadge.classList.add('hidden');
+  flaggedCountBadge.style.display = 'none';
   flaggedCountBadge.textContent = '0';
 
   // Clear Detailed Analysis page back to No Data Available
