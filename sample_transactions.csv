@@ -1,0 +1,11 @@
+Date,Description,Amount,Category
+2026-04-01,Office Rent,2500,Fixed Costs
+2026-04-02,Amazon Web Services,450.25,Software
+2026-04-05,Office Supplies,125,Variable Costs
+2026-04-10,Client Dinner,300,Travel/Meals
+2026-04-10,Client Dinner,300,Travel/Meals
+2026-04-12,New Server Hardware,15000,Capital Expense
+2026-04-15,Cash Withdrawal,500,Uncategorized
+2026-04-18,Consultancy Fee,2000,Software
+2026-04-20,Office Cleaning,,Maintenance
+2026-04-21,Rounding Adjustment,100,Other

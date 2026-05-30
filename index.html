@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Audit AI — Financial Transaction Forensics</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <div id="app">
+      <aside style="gap: 0px; padding-top: 12px;">
+        <div class="logo" style="padding: 12px 16px 0 16px; margin-bottom: 0;">
+          <!-- Logo Image -->
+          <img src="/logo.png" id="sidebar-logo-img" alt="AUDIT AI Logo" style="width: 140px; height: auto; display: block;" onerror="this.style.display='none'; document.getElementById('sidebar-logo-fallback').style.display='flex';" />
+          
+          <!-- Fallback -->
+          <div id="sidebar-logo-fallback" style="display: none; flex-direction: column; gap: 0.25rem;">
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+              <i data-lucide="shield-check" style="color: #00ff87;"></i>
+              <span style="font-weight: 700; color: #ffffff; font-size: 1.25rem;">AUDIT<span style="color: #00ff87;">AI</span></span>
+            </div>
+            <span style="font-size: 0.65rem; color: #a8bccf; font-weight: normal; margin-left: 1.75rem;">Financial Transaction Forensics</span>
+          </div>
+        </div>
+        <nav style="margin-top: 8px; padding-top: 0; width: 100%;">
+          <a href="#" class="nav-item active" data-section="overview">
+            <i data-lucide="layout-dashboard"></i> Overview
+          </a>
+          <a href="#" class="nav-item" data-section="analysis">
+            <i data-lucide="search"></i> Detailed Analysis
+          </a>
+          <a href="#" class="nav-item" data-section="flagged">
+            <i data-lucide="alert-triangle"></i> Flagged Items
+            <span id="flagged-count-badge" class="badge badge-danger hidden" style="margin-left: auto;">0</span>
+          </a>
+          <a href="#" class="nav-item" data-section="reports">
+            <i data-lucide="file-text"></i> Audit Reports
+          </a>
+        </nav>
+        <div style="margin-top: auto; width: 100%;">
+          <a href="#" class="nav-item" data-section="settings">
+            <i data-lucide="settings"></i> Settings
+          </a>
+        </div>
+      </aside>
+
+      <main>
+        <!-- Header -->
+        <div class="header">
+          <div class="title-group">
+            <h1 id="page-title">Audit Overview</h1>
+            <p id="page-subtitle">Real-time financial anomaly detection and risk assessment.</p>
+          </div>
+          <div class="actions" style="display: flex; gap: 0.75rem;">
+            <button class="btn-clear-data hidden" id="clear-data-btn">
+              🗑️ Clear Data
+            </button>
+            <button class="btn-outline" id="export-pdf">
+              <i data-lucide="download"></i> Export PDF
+            </button>
+          </div>
+        </div>
+
+        <div id="toast-container" class="toast-container"></div>
+
+        <!-- Upload Section (Visible when no data) -->
+        <section id="upload-section" style="position: relative; overflow: hidden; display: flex; flex-direction: column; gap: 16px; width: 100%; max-width: 1100px; margin: 0 auto; padding: 0.25rem 0;">
+          <!-- SVG Decorative Network Background -->
+          <div class="hero-network-bg" style="position: absolute; top: 0; right: 0; pointer-events: none; width: 500px; height: 300px; z-index: 0; opacity: 0.85;">
+            <svg width="100%" height="100%" viewBox="0 0 500 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M100 80 L220 120 L350 70 L420 180 L300 240 L160 210 Z" stroke="#00ff87" stroke-width="1.2" stroke-opacity="0.08" stroke-dasharray="4 4" />
+              <path d="M220 120 L300 240 M350 70 L300 240 M100 80 L160 210" stroke="#00ff87" stroke-width="0.8" stroke-opacity="0.06" />
+              <circle cx="100" cy="80" r="5" fill="#00ff87" fill-opacity="0.1" />
+              <circle cx="220" cy="120" r="7" fill="#00ff87" fill-opacity="0.1" />
+              <circle cx="350" cy="70" r="4" fill="#00ff87" fill-opacity="0.1" />
+              <circle cx="420" cy="180" r="6" fill="#00ff87" fill-opacity="0.1" />
+              <circle cx="300" cy="240" r="8" fill="#00ff87" fill-opacity="0.1" />
+              <circle cx="160" cy="210" r="5" fill="#00ff87" fill-opacity="0.1" />
+            </svg>
+          </div>
+
+          <!-- Pulsing Background Circles (Floating Bubbles) -->
+          <div class="floating-bubble bubble-1"></div>
+          <div class="floating-bubble bubble-2"></div>
+          <div class="floating-bubble bubble-3"></div>
+          <div class="floating-bubble bubble-4"></div>
+          <div class="floating-bubble bubble-5"></div>
+          <div class="floating-bubble bubble-6"></div>
+
+          <!-- Subtle Glowing Teal Dots scattered at very low opacity -->
+          <div class="glowing-teal-dot" style="top: 15%; left: 8%; opacity: 0.15;"></div>
+          <div class="glowing-teal-dot" style="top: 40%; left: 85%; opacity: 0.12;"></div>
+          <div class="glowing-teal-dot" style="top: 75%; left: 22%; opacity: 0.18;"></div>
+          <div class="glowing-teal-dot" style="top: 60%; left: 70%; opacity: 0.10;"></div>
+          <div class="glowing-teal-dot" style="top: 90%; left: 50%; opacity: 0.15;"></div>
+
+          <!-- Compact Upload Dropzone Bar (Placed at the top) -->
+          <div class="dropzone pulse-border" id="dropzone" style="z-index: 1; margin: 12px 0; padding: 0 1.25rem; min-height: 60px; display: flex; align-items: center; justify-content: space-between; border-radius: 12px; border: 1px dashed var(--primary); background: #0d1f35; width: 100%; box-shadow: 0 0 10px rgba(0, 255, 135, 0.05); cursor: pointer; transition: min-height 0.3s ease;">
+            <div id="upload-idle" style="display: flex; align-items: center; gap: 0.75rem; width: 100%; height: 100%; padding: 0.5rem 0;">
+              <div class="dropzone-icon" style="color: var(--primary); font-size: 1.25rem; display: flex; align-items: center; justify-content: center; margin: 0;">
+                <i data-lucide="upload-cloud" style="width: 20px; height: 20px;"></i>
+              </div>
+              <div style="font-size: 0.8rem; color: var(--text-main); font-weight: 500; flex: 1; text-align: left;">
+                Upload Transaction Data — <span style="color: var(--text-muted); font-weight: normal;">Drag and drop your CSV or Excel file or click to browse</span>
+              </div>
+              <button class="btn-primary" style="padding: 0.35rem 1rem; font-size: 0.75rem; height: 28px; border-radius: 6px; font-weight: 600; background: var(--primary); color: #fff; cursor: pointer;">
+                Browse
+              </button>
+              <input type="file" id="file-input" hidden accept=".csv,.xlsx,.xls" />
+            </div>
+            
+            <div id="upload-loading" class="pipeline-container hidden" style="width: 100%; padding: 1.5rem 0;">
+              <div class="pipeline-header">
+                <h2>AI Auditing Intelligence Active</h2>
+                <p>Forensic deep-scan executing across transactions...</p>
+              </div>
+
+              <!-- Main Progress Bar -->
+              <div class="pipeline-progress-wrapper">
+                <div class="pipeline-progress-track">
+                  <div class="pipeline-progress-fill" id="pipeline-progress-bar" style="width: 0%;"></div>
+                </div>
+                <div class="pipeline-percentage" id="pipeline-percentage">0% Completed</div>
+              </div>
+
+              <!-- Steps List -->
+              <div class="pipeline-steps" style="display: flex; flex-direction: column; gap: 0.75rem; width: 100%;">
+                <!-- Step 1 -->
+                <div class="pipeline-step" id="pipeline-step-1" style="padding: 0.75rem 1rem; display: flex; align-items: center; gap: 1rem; border-radius: 12px; background: rgba(255,255,255,0.02); border: 1px solid var(--border); transition: all 0.3s ease;">
+                  <div class="step-indicator" id="step-indicator-1" style="display: flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: 50%; border: 1px solid var(--border); font-size: 0.75rem;">
+                    <span class="step-num" id="step-num-1">1</span>
+                    <i data-lucide="loader-2" class="step-spinner spin hidden" id="step-spinner-1" style="width: 14px; height: 14px;"></i>
+                    <i data-lucide="check" class="step-check hidden" id="step-check-1" style="width: 14px; height: 14px; color: var(--primary);"></i>
+                  </div>
+                  <div class="step-text" id="step-text-1" style="font-size: 0.85rem; color: var(--text-muted); transition: all 0.3s ease;">
+                    📂 Reading file and extracting transactions...
+                  </div>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="pipeline-step" id="pipeline-step-2" style="padding: 0.75rem 1rem; display: flex; align-items: center; gap: 1rem; border-radius: 12px; background: rgba(255,255,255,0.02); border: 1px solid var(--border); transition: all 0.3s ease;">
+                  <div class="step-indicator" id="step-indicator-2" style="display: flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: 50%; border: 1px solid var(--border); font-size: 0.75rem;">
+                    <span class="step-num" id="step-num-2">2</span>
+                    <i data-lucide="loader-2" class="step-spinner spin hidden" id="step-spinner-2" style="width: 14px; height: 14px;"></i>
+                    <i data-lucide="check" class="step-check hidden" id="step-check-2" style="width: 14px; height: 14px; color: var(--primary);"></i>
+                  </div>
+                  <div class="step-text" id="step-text-2" style="font-size: 0.85rem; color: var(--text-muted); transition: all 0.3s ease;">
+                    🏷️ Classifying transaction categories...
+                  </div>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="pipeline-step" id="pipeline-step-3" style="padding: 0.75rem 1rem; display: flex; align-items: center; gap: 1rem; border-radius: 12px; background: rgba(255,255,255,0.02); border: 1px solid var(--border); transition: all 0.3s ease;">
+                  <div class="step-indicator" id="step-indicator-3" style="display: flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: 50%; border: 1px solid var(--border); font-size: 0.75rem;">
+                    <span class="step-num" id="step-num-3">3</span>
+                    <i data-lucide="loader-2" class="step-spinner spin hidden" id="step-spinner-3" style="width: 14px; height: 14px;"></i>
+                    <i data-lucide="check" class="step-check hidden" id="step-check-3" style="width: 14px; height: 14px; color: var(--primary);"></i>
+                  </div>
+                  <div class="step-text" id="step-text-3" style="font-size: 0.85rem; color: var(--text-muted); transition: all 0.3s ease;">
+                    🔍 Detecting anomalies and risk patterns...
+                  </div>
+                </div>
+
+                <!-- Step 4 -->
+                <div class="pipeline-step" id="pipeline-step-4" style="padding: 0.75rem 1rem; display: flex; align-items: center; gap: 1rem; border-radius: 12px; background: rgba(255,255,255,0.02); border: 1px solid var(--border); transition: all 0.3s ease;">
+                  <div class="step-indicator" id="step-indicator-4" style="display: flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: 50%; border: 1px solid var(--border); font-size: 0.75rem;">
+                    <span class="step-num" id="step-num-4">4</span>
+                    <i data-lucide="loader-2" class="step-spinner spin hidden" id="step-spinner-4" style="width: 14px; height: 14px;"></i>
+                    <i data-lucide="check" class="step-check hidden" id="step-check-4" style="width: 14px; height: 14px; color: var(--primary);"></i>
+                  </div>
+                  <div class="step-text" id="step-text-4" style="font-size: 0.85rem; color: var(--text-muted); transition: all 0.3s ease;">
+                    📊 Generating audit report and recommendations...
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Try with Sample Data Button -->
+          <div style="z-index: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.35rem; margin: 4px 0 12px 0;">
+            <button id="btn-sample-data" class="btn-outline" style="border: 1px solid var(--primary); color: var(--primary); background: transparent; padding: 0.5rem 1.5rem; font-size: 0.8rem; border-radius: 8px; display: flex; align-items: center; gap: 0.5rem; cursor: pointer; transition: all 0.2s ease; font-weight: 600;">
+              <i data-lucide="beaker" style="width: 16px; height: 16px;"></i>
+              Try with Sample Data
+            </button>
+            <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 400;">No file needed — perfect for testing</span>
+          </div>
+
+          <!-- Hero Greeting -->
+          <div style="z-index: 1; margin-top: -0.25rem;">
+            <h1 style="font-size: 2rem; font-weight: 700; color: var(--text-main); margin-bottom: 0.25rem;">Financial Transaction Forensic Audits</h1>
+            <p style="color: var(--text-muted); font-size: 0.85rem; max-width: 800px; line-height: 1.5;">Ingest your transaction logs into our deep forensic engine to immediately identify fraud spikes, cash adjustments, duplicate invoices, and category outliers.</p>
+          </div>
+
+          <!-- Hardcoded Demo Floating Stat Cards -->
+          <div class="hero-demo-cards" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; z-index: 1;">
+            <!-- Card 1: Red shield -->
+            <div class="demo-card card-red" style="display: flex; align-items: center; gap: 0.75rem; background: rgba(17, 24, 39, 0.7); border: 1px solid rgba(239, 68, 68, 0.35); border-radius: 12px; padding: 1rem; backdrop-filter: blur(8px);">
+              <div style="color: #ef4444; background: rgba(239, 68, 68, 0.08); padding: 0.4rem; border-radius: 8px; display: flex; align-items: center; justify-content: center;"><i data-lucide="shield-alert" style="width: 20px; height: 20px;"></i></div>
+              <div>
+                <div style="font-size: 1.2rem; font-weight: 700; color: var(--text-main);">$4.7T</div>
+                <div style="font-size: 0.65rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">Fraud Detected Globally</div>
+              </div>
+            </div>
+            
+            <!-- Card 2: Green lightning bolt -->
+            <div class="demo-card card-teal" style="display: flex; align-items: center; gap: 0.75rem; background: rgba(17, 24, 39, 0.7); border: 1px solid rgba(16, 185, 129, 0.35); border-radius: 12px; padding: 1rem; backdrop-filter: blur(8px);">
+              <div style="color: #10b981; background: rgba(16, 185, 129, 0.08); padding: 0.4rem; border-radius: 8px; display: flex; align-items: center; justify-content: center;"><i data-lucide="zap" style="width: 20px; height: 20px;"></i></div>
+              <div>
+                <div style="font-size: 1.2rem; font-weight: 700; color: var(--text-main);">10x Faster</div>
+                <div style="font-size: 0.65rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">Than Manual Audit</div>
+              </div>
+            </div>
+
+            <!-- Card 3: Purple target -->
+            <div class="demo-card card-purple" style="display: flex; align-items: center; gap: 0.75rem; background: rgba(17, 24, 39, 0.7); border: 1px solid rgba(168, 85, 247, 0.35); border-radius: 12px; padding: 1rem; backdrop-filter: blur(8px);">
+              <div style="color: #a855f7; background: rgba(168, 85, 247, 0.08); padding: 0.4rem; border-radius: 8px; display: flex; align-items: center; justify-content: center;"><i data-lucide="target" style="width: 20px; height: 20px;"></i></div>
+              <div>
+                <div style="font-size: 1.2rem; font-weight: 700; color: var(--text-main);">97%</div>
+                <div style="font-size: 0.65rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">Detection Accuracy</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Hero Image Visual -->
+          <div class="hero-image-wrapper" style="position: relative; width: 100%; height: 240px; border-radius: 12px; border: 1px solid rgba(0, 255, 135, 0.25); overflow: hidden; box-shadow: 0 8px 24px rgba(0,0,0,0.5); z-index: 1;">
+            <!-- Main Image -->
+            <img src="https://wp.oecd.ai/app/uploads/2023/12/Holistic-audits.png" alt="Holistic audits visual" onerror="this.style.display='none'; document.getElementById('image-placeholder').style.display='flex';" style="width: 100%; height: 240px; object-fit: cover; display: block;" />
+            
+            <!-- Image Placeholder if load fails -->
+            <div id="image-placeholder" style="display: none; align-items: center; justify-content: center; width: 100%; height: 240px; background: #0d1f35; color: var(--text-muted); font-size: 0.85rem;">
+              <span>Image unavailable</span>
+            </div>
+
+            <!-- Gradient Overlay -->
+            <div style="position: absolute; bottom: 0; left: 0; width: 100%; height: 50%; background: linear-gradient(180deg, transparent 0%, #0a0f1e 100%); pointer-events: none;"></div>
+            <!-- Floating Text Badge -->
+            <div style="position: absolute; bottom: 1rem; left: 1rem; background: rgba(10, 15, 30, 0.85); backdrop-filter: blur(6px); border: 1px solid rgba(255,255,255,0.08); padding: 0.35rem 0.75rem; border-radius: 9999px; display: flex; align-items: center; gap: 0.5rem; box-shadow: 0 4px 12px rgba(0,0,0,0.35);">
+              <span style="font-size: 0.75rem; font-weight: 500; color: #fff;">🔍 Real-world audit data — Upload yours to get started</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Dashboard Section -->
+        <section id="dashboard-section" class="hidden">
+          <div class="dashboard-top-row" style="display: grid; grid-template-columns: 1fr 300px; gap: 1.5rem; margin-bottom: 2rem; align-items: start;">
+            <!-- Left: Stat cards grid -->
+            <div class="stats-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; margin-bottom: 0;">
+              <!-- Card 1 — Total Transactions -->
+              <div class="card" id="total-tx-card" style="border-left: 4px solid #3b82f6;">
+                <div class="stat-header">
+                  <span>Total Transactions</span>
+                  <i data-lucide="file-text" style="color: #3b82f6;"></i>
+                </div>
+                <div class="stat-value" id="total-tx">0</div>
+                <div class="stat-trend" style="color: var(--text-muted); font-size: 0.75rem;">
+                  Processed entries
+                </div>
+              </div>
+
+              <!-- Card 2 — Flagged Items -->
+              <div class="card" id="flagged-tx-card" style="border-left: 4px solid #ef4444;">
+                <div class="stat-header">
+                  <span>Flagged Items</span>
+                  <i data-lucide="alert-triangle" style="color: #ef4444;"></i>
+                </div>
+                <div class="stat-value" id="flagged-tx" style="color: #ef4444;">0</div>
+                <div class="stat-trend" style="color: var(--text-muted); font-size: 0.75rem;">
+                  Require attention
+                </div>
+              </div>
+
+              <!-- Card 3 — Risk Score -->
+              <div class="card" id="risk-score-card" style="border-left: 4px solid #10b981;">
+                <div class="stat-header">
+                  <span>Risk Score</span>
+                  <i data-lucide="shield" id="risk-score-icon"></i>
+                </div>
+                <div class="stat-value" id="risk-score">0.0</div>
+                <div class="stat-trend" style="color: var(--text-muted); font-size: 0.75rem;">
+                  Weighted compliance score
+                </div>
+              </div>
+
+              <!-- Card 4 — Total Amount Analyzed -->
+              <div class="card" id="total-amount-card" style="border-left: 4px solid #10b981;">
+                <div class="stat-header">
+                  <span>Total Amount Analyzed</span>
+                  <i data-lucide="dollar-sign" style="color: #10b981;"></i>
+                </div>
+                <div class="stat-value" id="total-amount">$0</div>
+                <div class="stat-trend" style="color: var(--text-muted); font-size: 0.75rem;">
+                  Processed ledger volume
+                </div>
+              </div>
+            </div>
+
+            <!-- Right: Risk Score Gauge Speedometer -->
+            <div class="card risk-gauge-card" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1.5rem; min-height: 232px; height: 100%; border: 1px solid var(--border);">
+              <h3 style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; width: 100%; text-align: center;">Risk Score Gauge</h3>
+              <div style="position: relative; width: 200px; height: 110px; display: flex; align-items: center; justify-content: center; margin-top: 0.5rem;">
+                <svg width="200" height="110" viewBox="0 0 200 110" style="overflow: visible;">
+                  <!-- Background Track -->
+                  <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="14" stroke-linecap="round" />
+                  
+                  <!-- Colored Speedometer Arc -->
+                  <path d="M 20 100 A 80 80 0 0 1 68 36" fill="none" stroke="#10b981" stroke-width="14" />
+                  <path d="M 68 36 A 80 80 0 0 1 132 36" fill="none" stroke="#f59e0b" stroke-width="14" />
+                  <path d="M 132 36 A 80 80 0 0 1 180 100" fill="none" stroke="#ef4444" stroke-width="14" />
+
+                  <!-- Center Pin -->
+                  <circle cx="100" cy="100" r="6" fill="#fff" />
+                  <circle cx="100" cy="100" r="3" fill="#0f172a" />
+
+                  <!-- Needle -->
+                  <line id="gauge-needle" x1="100" y1="100" x2="100" y2="30" stroke="#fff" stroke-width="3" stroke-linecap="round" style="transform-origin: 100px 100px; transform: rotate(-90deg); transition: transform 1.5s cubic-bezier(0.25, 1, 0.5, 1);" />
+                </svg>
+                
+                <!-- Large Risk Score text in the center below the arc -->
+                <div style="position: absolute; bottom: 0; left: 0; width: 100%; text-align: center; display: flex; flex-direction: column; align-items: center;">
+                  <span id="gauge-score-value" style="font-size: 2rem; font-weight: 700; color: var(--text-main); line-height: 1.1;">0%</span>
+                  <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 500; margin-top: 0.15rem;">Overall Risk Score</span>
+                </div>
+              </div>
+              
+              <!-- Legend underneath -->
+              <div style="display: flex; gap: 0.75rem; font-size: 0.65rem; color: var(--text-muted); margin-top: 1rem; justify-content: center; font-weight: 600;">
+                <span>🟢 Low 0-30</span>
+                <span>🟡 Med 30-70</span>
+                <span>🔴 High 70-100</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="charts-grid">
+            <div class="card">
+              <h3>Daily Transaction Volume</h3>
+              <div style="height: 300px; margin-top: 1rem;">
+                <canvas id="volumeChart"></canvas>
+              </div>
+            </div>
+            <div class="card">
+              <h3>Transaction by Category</h3>
+              <div style="height: 300px; margin-top: 1rem;">
+                <canvas id="categoryChart"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- AI Strategic Action Plan -->
+          <div class="card" style="margin-bottom: 2rem;" id="action-plan-card">
+            <h3 style="display: flex; align-items: center; gap: 0.5rem; color: var(--primary);">
+              <i data-lucide="shield-alert" style="width: 20px; height: 20px;"></i>
+              AI Strategic Action Plan
+            </h3>
+            <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1.25rem;">Automated security recommendations compiled from transaction profile anomalies.</p>
+            <div id="action-plan-list" style="display: flex; flex-direction: column; gap: 1rem;">
+              <!-- Action plan items will be added dynamically -->
+            </div>
+          </div>
+
+          <div class="card" style="margin-bottom: 2rem;">
+            <h3>Top 5 Suspicious Transactions</h3>
+            <div class="table-container" style="margin-top: 1rem; border: none;">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Description</th>
+                    <th>Amount</th>
+                    <th>Risk Level</th>
+                    <th>Reason Flagged</th>
+                  </tr>
+                </thead>
+                <tbody id="top-suspicious-table">
+                  <!-- Rows will be added dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </section>
+
+        <!-- Detailed Analysis Section -->
+        <section id="analysis-section" class="hidden">
+          <!-- Active state -->
+          <div id="active-analysis-view" class="hidden">
+            <div class="analysis-layout">
+              
+              <!-- Left Sidebar: Filter Panel -->
+              <div class="analysis-filter-sidebar card">
+                <h3 style="display: flex; align-items: center; gap: 0.5rem; color: var(--primary); font-size: 1.1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.75rem; margin-bottom: 1.25rem;">
+                  <i data-lucide="filter" style="width: 18px; height: 18px;"></i>
+                  Filter Panel
+                </h3>
+                
+                <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+                  <!-- Date Range -->
+                  <div>
+                    <label style="font-weight: 600; display: block; margin-bottom: 0.5rem; font-size: 0.85rem; color: var(--text-muted);">DATE RANGE</label>
+                    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                      <input type="date" id="filter-start-date" style="background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border); border-radius: 8px; padding: 0.5rem; color: #fff; width: 100%; font-size: 0.85rem; outline: none;" />
+                      <input type="date" id="filter-end-date" style="background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border); border-radius: 8px; padding: 0.5rem; color: #fff; width: 100%; font-size: 0.85rem; outline: none;" />
+                    </div>
+                  </div>
+
+                  <!-- Category Filter -->
+                  <div>
+                    <label style="font-weight: 600; display: block; margin-bottom: 0.5rem; font-size: 0.85rem; color: var(--text-muted);">CATEGORY</label>
+                    <select id="filter-category" style="background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border); border-radius: 8px; padding: 0.6rem 0.8rem; color: #fff; width: 100%; font-size: 0.85rem; outline: none; cursor: pointer;">
+                      <option value="all">All Categories</option>
+                      <option value="Food">Food</option>
+                      <option value="Transport">Transport</option>
+                      <option value="Salary">Salary</option>
+                      <option value="Utilities">Utilities</option>
+                      <option value="Unknown">Unknown</option>
+                    </select>
+                  </div>
+
+                  <!-- Risk Level Filter -->
+                  <div>
+                    <label style="font-weight: 600; display: block; margin-bottom: 0.5rem; font-size: 0.85rem; color: var(--text-muted);">RISK LEVEL</label>
+                    <select id="filter-risk-level" style="background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border); border-radius: 8px; padding: 0.6rem 0.8rem; color: #fff; width: 100%; font-size: 0.85rem; outline: none; cursor: pointer;">
+                      <option value="all">All Risk Levels</option>
+                      <option value="High">High Risk</option>
+                      <option value="Medium">Medium Risk</option>
+                      <option value="Low">Low Risk</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Right Panel: Main Contents -->
+              <div class="analysis-main-content" style="display: flex; flex-direction: column; gap: 1.5rem;">
+                <!-- Search and Top Controls -->
+                <div class="card" style="padding: 1.25rem;">
+                  <div style="display: flex; gap: 1rem; align-items: center;">
+                    <div style="flex: 1; position: relative;">
+                      <input type="text" id="analysis-search" placeholder="Search transactions by description..." style="width: 100%; padding: 0.75rem 1rem; font-size: 0.9rem;" />
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Double Side-by-Side Charts -->
+                <div class="analysis-charts-grid">
+                  <div class="card">
+                    <h3>Transaction by Category</h3>
+                    <div style="height: 250px; margin-top: 1rem;">
+                      <canvas id="analysisCategoryChart"></canvas>
+                    </div>
+                  </div>
+                  <div class="card">
+                    <h3>Transaction Volume Over Time</h3>
+                    <div style="height: 250px; margin-top: 1rem;">
+                      <canvas id="analysisTimelineChart"></canvas>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Transaction Table Card -->
+                <div class="card" style="padding: 1.5rem;">
+                  <div class="table-container" style="border: none;">
+                    <table>
+                      <thead>
+                        <tr>
+                          <th style="cursor: pointer;" id="header-date">
+                            Date <i data-lucide="chevrons-up-down" style="width: 12px; height: 12px; display: inline-block; vertical-align: middle;"></i>
+                          </th>
+                          <th style="cursor: pointer;" id="header-desc">
+                            Description <i data-lucide="chevrons-up-down" style="width: 12px; height: 12px; display: inline-block; vertical-align: middle;"></i>
+                          </th>
+                          <th style="cursor: pointer;" id="header-amount">
+                            Amount <i data-lucide="chevrons-up-down" style="width: 12px; height: 12px; display: inline-block; vertical-align: middle;"></i>
+                          </th>
+                          <th style="cursor: pointer;" id="header-cat">
+                            Category <i data-lucide="chevrons-up-down" style="width: 12px; height: 12px; display: inline-block; vertical-align: middle;"></i>
+                          </th>
+                          <th style="cursor: pointer;" id="header-risk">
+                            Risk Score <i data-lucide="chevrons-up-down" style="width: 12px; height: 12px; display: inline-block; vertical-align: middle;"></i>
+                          </th>
+                          <th>Status</th>
+                        </tr>
+                      </thead>
+                      <tbody id="analysis-table-body">
+                        <!-- Dynamic rows -->
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <div id="analysis-empty" class="hidden" style="text-align: center; padding: 3rem 1rem; color: var(--text-muted);">
+                    <i data-lucide="search-code" style="width: 48px; height: 48px; margin-bottom: 1rem; color: var(--text-muted); display: inline-block;"></i>
+                    <h3>No matching transactions found</h3>
+                    <p>Try refining your search terms or choosing a different filter parameter on the left panel.</p>
+                  </div>
+                </div>
+              </div>
+              
+            </div>
+          </div>
+
+          <!-- Empty state -->
+          <div id="empty-analysis-view" class="empty-state">
+            <i data-lucide="file-warning"></i>
+            <h2>No Data Available</h2>
+            <p>Please upload a transaction file to view detailed transaction analysis.</p>
+            <button class="btn-primary" style="margin-top: 1.5rem;" onclick="document.querySelector('[data-section=\'overview\']').click()">
+              Go to Upload
+            </button>
+          </div>
+        </section>
+
+        <!-- Settings Section -->
+        <section id="settings-section" class="hidden" style="position: relative;">
+          <!-- Settings Watermark -->
+          <div style="position: absolute; bottom: 2rem; right: 2rem; opacity: 0.03; pointer-events: none; color: var(--text-main); z-index: 0;">
+            <svg width="280" height="280" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="3"></circle>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+            </svg>
+          </div>
+          <div style="max-width: 700px; display: flex; flex-direction: column; gap: 1.5rem; position: relative; z-index: 1;">
+            <div class="card">
+              <h3 style="margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem; color: var(--primary);">
+                <i data-lucide="sliders" style="width: 20px; height: 20px;"></i>
+                AI Risk Assessment Settings
+              </h3>
+              
+              <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                <!-- Theme toggle setting -->
+                <div style="border-bottom: 1px solid var(--border); padding-bottom: 1.5rem;">
+                  <label style="font-weight: 600; display: block; margin-bottom: 0.5rem; font-size: 0.95rem;">Theme Mode</label>
+                  <p style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 1rem; line-height: 1.4;">Select the user interface color theme (Dark Mode or Light Mode).</p>
+                  <select id="setting-theme" style="background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem 1rem; color: var(--text-main); width: 100%; max-width: 320px; outline: none; cursor: pointer;">
+                    <option value="dark" selected>Dark Mode (Default)</option>
+                    <option value="light">Light Mode</option>
+                  </select>
+                </div>
+
+                <!-- Average multiplier setting -->
+                <div style="border-bottom: 1px solid var(--border); padding-bottom: 1.5rem;">
+                  <label style="font-weight: 600; display: block; margin-bottom: 0.5rem; font-size: 0.95rem;">Statistical Spike Threshold</label>
+                  <p style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 1rem; line-height: 1.4;">Configure how many times higher a transaction amount must be than the average standard amount before being flagged as a high-risk outlier.</p>
+                  <select id="setting-avg-multiplier" style="background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem 1rem; color: var(--text-main); width: 100%; max-width: 320px; outline: none; cursor: pointer;">
+                    <option value="2">2.0x Higher Than Average (High Sensitivity)</option>
+                    <option value="3" selected>3.0x Higher Than Average (Recommended)</option>
+                    <option value="4">4.0x Higher Than Average (Low Sensitivity)</option>
+                  </select>
+                </div>
+
+                <!-- Active scanners check checklist -->
+                <div style="border-bottom: 1px solid var(--border); padding-bottom: 1.5rem;">
+                  <label style="font-weight: 600; display: block; margin-bottom: 1rem; font-size: 0.95rem;">Enabled Forensic Algorithms</label>
+                  
+                  <div style="display: flex; flex-direction: column; gap: 1rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                      <div>
+                        <div style="font-size: 0.9rem; font-weight: 500;">Duplicate Transaction Identifier</div>
+                        <div style="color: var(--text-muted); font-size: 0.75rem; margin-top: 0.15rem;">Flags double payments on identical dates.</div>
+                      </div>
+                      <input type="checkbox" checked disabled style="width: 18px; height: 18px; accent-color: var(--primary);" />
+                    </div>
+                    
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                      <div>
+                        <div style="font-size: 0.9rem; font-weight: 500;">Round Number Limits ($1000/$5000 scans)</div>
+                        <div style="color: var(--text-muted); font-size: 0.75rem; margin-top: 0.15rem;">Identifies perfect round values that signal withdrawals.</div>
+                      </div>
+                      <input type="checkbox" checked disabled style="width: 18px; height: 18px; accent-color: var(--primary);" />
+                    </div>
+
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                      <div>
+                        <div style="font-size: 0.9rem; font-weight: 500;">Unknown Category Red Flags</div>
+                        <div style="color: var(--text-muted); font-size: 0.75rem; margin-top: 0.15rem;">Highlights unclassified entries to enforce accountability.</div>
+                      </div>
+                      <input type="checkbox" checked disabled style="width: 18px; height: 18px; accent-color: var(--primary);" />
+                    </div>
+                  </div>
+                </div>
+
+                <!-- System Maintenance -->
+                <div style="border-bottom: 1px solid var(--border); padding-bottom: 1.5rem;">
+                  <label style="font-weight: 600; display: block; margin-bottom: 0.5rem; font-size: 0.95rem; color: var(--danger);">System Maintenance</label>
+                  <p style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 1.25rem; line-height: 1.4;">Permanently clear all historical cache audits and saved statistics from localStorage.</p>
+                  <button class="btn-outline-danger" id="settings-clear-btn" style="padding: 0.75rem 1.5rem; display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                    <i data-lucide="trash-2" style="width: 16px; height: 16px;"></i>
+                    Clear Database Cache
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- About Section -->
+            <div class="card">
+              <h3 style="margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; color: var(--primary);">
+                <i data-lucide="info" style="width: 20px; height: 20px;"></i>
+                About Audit AI
+              </h3>
+              <div style="font-size: 0.9rem; line-height: 1.6; display: flex; flex-direction: column; gap: 0.5rem;">
+                <div><strong>App Version:</strong> 1.0</div>
+                <div><strong>Developer:</strong> Aashish Dhungana</div>
+                <div style="color: var(--text-muted); font-size: 0.8rem;">AI Engineering Final Project — Secure & Intelligent Ledger Audits.</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Flagged Items Section -->
+        <section id="flagged-section" class="hidden">
+          <!-- Active state -->
+          <div id="active-flagged-view" class="hidden">
+            <div class="filter-bar">
+              <button class="btn-filter active" data-filter="all">All Items</button>
+              <button class="btn-filter" data-filter="High">High Risk</button>
+              <button class="btn-filter" data-filter="Medium">Medium Risk</button>
+              <button class="btn-filter" data-filter="Low">Low Risk</button>
+            </div>
+
+            <div id="flagged-cards-container" class="flagged-grid">
+              <!-- Cards will be added dynamically -->
+            </div>
+          </div>
+
+          <!-- Empty state -->
+          <div id="empty-flagged-view" class="empty-state">
+            <i data-lucide="file-warning"></i>
+            <h2>No Data Available</h2>
+            <p>Please upload a transaction file to view flagged items.</p>
+            <button class="btn-primary" style="margin-top: 1.5rem;" onclick="document.querySelector('[data-section=\'overview\']').click()">
+              Go to Upload
+            </button>
+          </div>
+        </section>
+
+        <!-- Audit Reports Section -->
+        <section id="reports-section" class="hidden">
+          <div class="reports-layout">
+            
+            <!-- Left Pane: Active Audit Report Paper -->
+            <div class="report-paper-container">
+              <div id="active-report-view" class="hidden">
+                <div class="card report-paper" id="report-content">
+                  <div class="report-header">
+                    <i data-lucide="shield-check" style="width: 48px; height: 48px; color: var(--primary);"></i>
+                    <div>
+                      <h2>Internal Audit Final Report</h2>
+                      <p id="report-date">Generated on: April 21, 2026</p>
+                    </div>
+                  </div>
+
+                  <div class="report-section">
+                    <h3>SECTION 1 — Executive Summary</h3>
+                    <p id="executive-summary" style="line-height: 1.6; font-size: 0.95rem; color: #e8f4f8; margin-top: 0.75rem;">Analysis in progress...</p>
+                  </div>
+
+                  <div class="report-section">
+                    <h3>SECTION 2 — Key Metrics</h3>
+                    <div class="table-container" style="border: none; margin-top: 1rem; box-shadow: none;">
+                      <table style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                          <tr>
+                            <th style="width: 50%; padding: 0.75rem 1rem;">Metric</th>
+                            <th style="width: 50%; padding: 0.75rem 1rem;">Value</th>
+                          </tr>
+                        </thead>
+                        <tbody id="report-metrics-table-body">
+                          <!-- Populated dynamically -->
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+
+                  <div class="report-section">
+                    <h3>SECTION 3 — Flagged Transactions</h3>
+                    <div class="table-container" style="border: none; margin-top: 1rem; box-shadow: none;">
+                      <table style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                          <tr>
+                            <th style="padding: 0.75rem 1rem;">Date</th>
+                            <th style="padding: 0.75rem 1rem;">Description</th>
+                            <th style="padding: 0.75rem 1rem;">Amount</th>
+                            <th style="padding: 0.75rem 1rem;">Risk</th>
+                            <th style="padding: 0.75rem 1rem;">Reason Flagged</th>
+                          </tr>
+                        </thead>
+                        <tbody id="report-findings-table"></tbody>
+                      </table>
+                    </div>
+                  </div>
+
+                  <div class="report-section">
+                    <h3>SECTION 4 — AI Recommendations</h3>
+                    <ol id="ai-recommendations" style="margin-top: 1rem; padding-left: 1.5rem; line-height: 1.7; font-size: 0.95rem; color: #e8f4f8; display: flex; flex-direction: column; gap: 0.75rem;"></ol>
+                  </div>
+
+                  <div class="report-footer">
+                    <p>Confidential Financial Intelligence - Generated by Audit AI</p>
+                  </div>
+                </div>
+
+                <div style="margin-top: 2rem; display: flex; justify-content: center;">
+                  <button class="btn-primary" id="download-report-pdf" style="padding: 1rem 2rem; font-size: 1rem;">
+                    <i data-lucide="file-down"></i> Download Full PDF Report
+                  </button>
+                </div>
+              </div>
+
+              <!-- Shown when no active audit report exists -->
+              <div id="empty-report-view" class="empty-state">
+                <i data-lucide="file-warning"></i>
+                <h2>No Active Audit Report</h2>
+                <p>Please upload a financial transaction file or select a past report from the history list on the right.</p>
+                <button class="btn-primary" style="margin-top: 1.5rem;" onclick="document.querySelector('[data-section=\'overview\']').click()">
+                  Go to Upload
+                </button>
+              </div>
+            </div>
+
+            <!-- Right Pane: Audit History Sidebar -->
+            <div class="history-sidebar card">
+              <div class="history-sidebar-header">
+                <h3>Audit History</h3>
+                <button class="btn-outline-danger btn-sm" id="clear-history-btn">
+                  <i data-lucide="trash-2"></i> Clear All
+                </button>
+              </div>
+              <div class="history-list" id="history-list">
+                <!-- History cards will be added dynamically -->
+              </div>
+            </div>
+            
+          </div>
+        </section>
+
+        <!-- AI Chat Interface -->
+        <div class="chat-overlay" id="chat-interface">
+          <div class="chat-header">
+            <div class="chat-header-info">
+              <i data-lucide="bot" style="color: var(--primary);"></i>
+              <div>
+                <div style="font-weight: 600; font-size: 0.875rem;">Audit Intelligence</div>
+                <div style="font-size: 0.75rem; color: var(--text-muted);">Analyzing your data...</div>
+              </div>
+            </div>
+            <button id="close-chat" title="Close Chat">
+              <i data-lucide="x"></i>
+            </button>
+          </div>
+          <div class="chat-messages" id="chat-messages">
+            <div class="message message-ai">
+              Hello! I've analyzed your transaction data. Feel free to ask me questions about specific flags or overall risk patterns.
+            </div>
+          </div>
+          <!-- Chat Suggestions Row -->
+          <div class="chat-suggestions" style="display: flex; gap: 0.5rem; padding: 0.5rem 1rem; background: rgba(255,255,255,0.01); border-top: 1px solid var(--border); overflow-x: auto; flex-wrap: wrap; z-index: 10;">
+            <button class="btn-chat-suggest" data-query="What is my highest risk transaction?" style="background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border); border-radius: 6px; padding: 0.35rem 0.6rem; color: var(--primary); font-size: 0.7rem; cursor: pointer; transition: all 0.2s ease; font-weight: 500;">What is my highest risk transaction?</button>
+            <button class="btn-chat-suggest" data-query="How many duplicates were found?" style="background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border); border-radius: 6px; padding: 0.35rem 0.6rem; color: var(--primary); font-size: 0.7rem; cursor: pointer; transition: all 0.2s ease; font-weight: 500;">How many duplicates were found?</button>
+            <button class="btn-chat-suggest" data-query="What should I do first?" style="background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border); border-radius: 6px; padding: 0.35rem 0.6rem; color: var(--primary); font-size: 0.7rem; cursor: pointer; transition: all 0.2s ease; font-weight: 500;">What should I do first?</button>
+          </div>
+          <div class="chat-input-area">
+            <input type="text" id="chat-input" placeholder="Ask about the audit..." />
+            <button class="btn-primary" id="send-chat">
+              <i data-lucide="send"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Floating Chat Toggle -->
+        <div class="chat-toggle" id="chat-toggle">
+          <i data-lucide="bot"></i>
+        </div>
+        
+        <!-- Global Footer -->
+        <footer style="margin-top: 3rem; padding: 1.5rem 0; border-top: 1px solid var(--border); text-align: center; color: var(--text-muted); font-size: 0.8rem; width: 100%;">
+          Audit AI v1.0 — Built by Aashish Dhungana — AI Engineering Final Project
+        </footer>
+      </main>
+    </div>
+
+
+    <script type="module" src="/main.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+  </body>
+</html>
