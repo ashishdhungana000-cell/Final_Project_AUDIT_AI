@@ -631,7 +631,7 @@ async function renderReport() {
 
   // Update Summary
   document.getElementById('executive-summary').textContent = summary;
-  document.getElementById('report-date').textContent = `Generated on: ${new Date().toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}`;
+  document.getElementById('report-date').textContent = `Generated on: ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}`;
 
   // Update Section 2: Key Metrics Table
   const metricsTableBody = document.getElementById('report-metrics-table-body');
@@ -1417,6 +1417,12 @@ bindHeaderSort('header-risk', 'Risk Score');
 // ==========================================
 
 renderHistorySidebar();
+
+// Initialize the report date dynamically with today's date
+const reportDateEl = document.getElementById('report-date');
+if (reportDateEl) {
+  reportDateEl.textContent = `Generated on: ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}`;
+}
 
 // Clear active analysis keys from localStorage on startup/refresh
 const keysToClear = ['auditData', 'auditResults', 'transactionData', 'analysisResults', 'sampleData', 'active_audit_analysis', 'active_audit_filename'];
