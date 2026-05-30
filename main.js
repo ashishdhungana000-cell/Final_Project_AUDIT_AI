@@ -1666,3 +1666,32 @@ function performClear() {
   // Show a small green toast notification that disappears after 3 seconds
   showToast('✅ Analysis cleared — ready for new upload');
 }
+
+// ==========================================
+// MOBILE OVERLAY HAMBURGER NAVIGATION HANDLERS
+// ==========================================
+const hamburgerBtn = document.getElementById('hamburger-btn');
+const sidebar = document.querySelector('aside');
+
+if (hamburgerBtn && sidebar) {
+  hamburgerBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    sidebar.classList.toggle('open');
+  });
+
+  document.addEventListener('click', (e) => {
+    if (sidebar.classList.contains('open')) {
+      if (!sidebar.contains(e.target) && e.target !== hamburgerBtn && !hamburgerBtn.contains(e.target)) {
+        sidebar.classList.remove('open');
+      }
+    }
+  });
+
+  // Also close the sidebar when a nav item is clicked on mobile
+  const navItemsMobile = document.querySelectorAll('.nav-item');
+  navItemsMobile.forEach(item => {
+    item.addEventListener('click', () => {
+      sidebar.classList.remove('open');
+    });
+  });
+}

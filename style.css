@@ -1525,4 +1525,120 @@ main section:not(.hidden) {
   animation: fadeIn 0.3s ease-out forwards;
 }
 
+/* ==========================================
+   MOBILE & OVERLAY RESPONSIVE OVERRIDES
+   ========================================== */
+.hamburger-btn {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  /* 1. Hamburger menu & sidebar mobile overlay style */
+  .hamburger-btn {
+    display: flex !important;
+  }
+  
+  aside {
+    position: fixed !important;
+    top: 0 !important;
+    left: -280px !important;
+    width: 280px !important;
+    height: 100vh !important;
+    flex-direction: column !important;
+    justify-content: flex-start !important;
+    align-items: stretch !important;
+    z-index: 9999 !important;
+    background: #0a0f1e !important;
+    border-right: 1px solid var(--border) !important;
+    border-bottom: none !important;
+    transition: left 0.3s ease-in-out !important;
+    padding: 1.5rem !important;
+    box-shadow: 5px 0 25px rgba(0, 0, 0, 0.6) !important;
+    gap: 1.5rem !important;
+  }
+  
+  aside.open {
+    left: 0 !important;
+  }
+  
+  aside .logo {
+    display: flex !important;
+    flex-direction: column !important;
+    margin-bottom: 1.5rem !important;
+    padding: 0 !important;
+  }
+  
+  aside nav {
+    flex-direction: column !important;
+    width: 100% !important;
+    gap: 0.75rem !important;
+  }
+  
+  aside div[style*="margin-top: auto"] {
+    margin-top: auto !important;
+    width: 100% !important;
+  }
+  
+  /* 2. Stack the 3 hero stat cards vertically */
+  .hero-demo-cards {
+    grid-template-columns: 1fr !important;
+    gap: 1rem !important;
+  }
+  
+  /* 3. Tables scrollable wrap */
+  .table-container {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* 4. Upload bar vertical stacking */
+  .dropzone {
+    min-height: unset !important;
+    padding: 1.5rem 1.25rem !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 1rem !important;
+  }
+  
+  #upload-idle {
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+    gap: 1rem !important;
+    width: 100% !important;
+  }
+  
+  #upload-idle .dropzone-icon {
+    margin: 0 !important;
+  }
+  
+  #upload-idle div[style*="font-size: 0.8rem"] {
+    text-align: center !important;
+    padding: 0 !important;
+  }
+  
+  #upload-idle .btn-primary {
+    width: 100% !important;
+    height: 38px !important;
+    margin-top: 0.5rem !important;
+  }
+  
+  /* 5. Reduce all font sizes by 2px on mobile screens */
+  html {
+    font-size: 14px !important; /* Scales down root-relative sizing (rem) */
+  }
+  
+  h1 { font-size: 1.75rem !important; }
+  h2 { font-size: 1.35rem !important; }
+  h3 { font-size: 1.1rem !important; }
+  
+  /* Override inline pixel sizes */
+  [style*="font-size: 12px"] { font-size: 10px !important; }
+  [style*="font-size: 14px"] { font-size: 12px !important; }
+  [style*="font-size: 16px"] { font-size: 14px !important; }
+  [style*="font-size: 18px"] { font-size: 16px !important; }
+  [style*="font-size: 20px"] { font-size: 18px !important; }
+  [style*="font-size: 24px"] { font-size: 22px !important; }
+}
+
 
