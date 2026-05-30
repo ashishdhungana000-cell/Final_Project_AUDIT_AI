@@ -210,7 +210,7 @@ const sampleTransactions = [
 async function handleSampleData() {
   currentFilename = 'Sample_Transactions.csv';
   uploadIdle.classList.add('hidden');
-  uploadLoading.classList.remove('hidden');
+  uploadLoading.style.display = 'flex';
   const heroVisual = document.querySelector('.hero-image-wrapper');
   if (heroVisual) heroVisual.classList.add('hidden');
 
@@ -303,7 +303,7 @@ async function handleSampleData() {
   } catch (error) {
     console.error('Audit Error:', error);
     uploadIdle.classList.remove('hidden');
-    uploadLoading.classList.add('hidden');
+    uploadLoading.style.display = 'none';
     const heroVisual = document.querySelector('.hero-image-wrapper');
     if (heroVisual) heroVisual.classList.remove('hidden');
     showToast('Analysis failed — please try again', true);
@@ -423,7 +423,7 @@ async function handleFile(file) {
 
   currentFilename = file.name;
   uploadIdle.classList.add('hidden');
-  uploadLoading.classList.remove('hidden');
+  uploadLoading.style.display = 'flex';
   const heroVisual = document.querySelector('.hero-image-wrapper');
   if (heroVisual) heroVisual.classList.add('hidden');
 
@@ -518,9 +518,9 @@ async function handleFile(file) {
     displayResults();
 
   } catch (error) {
-    console.error('Audit Error:', error);
+    console.error('File Analysis Error:', error);
     uploadIdle.classList.remove('hidden');
-    uploadLoading.classList.add('hidden');
+    uploadLoading.style.display = 'none';
     const heroVisual = document.querySelector('.hero-image-wrapper');
     if (heroVisual) heroVisual.classList.remove('hidden');
     if (fileInput) fileInput.value = '';
@@ -848,7 +848,7 @@ function resetUpload() {
   uploadSection.classList.remove('hidden');
   dashboardSection.classList.add('hidden');
   uploadIdle.classList.remove('hidden');
-  uploadLoading.classList.add('hidden');
+  uploadLoading.style.display = 'none';
   if (fileInput) fileInput.value = '';
 }
 
@@ -1630,7 +1630,7 @@ function performClear() {
   dashboardSection.classList.add('hidden');
   uploadSection.classList.remove('hidden');
   uploadIdle.classList.remove('hidden');
-  uploadLoading.classList.add('hidden');
+  uploadLoading.style.display = 'none';
   
   const heroVisual = document.querySelector('.hero-image-wrapper');
   if (heroVisual) heroVisual.classList.remove('hidden');
